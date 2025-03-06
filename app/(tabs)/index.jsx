@@ -1,101 +1,115 @@
 import { Image, StyleSheet, Platform, View, Text, FlatList } from 'react-native';
 
+import { useState } from 'react';
+
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useEffect } from 'react';
 
 const ayahData = require('./ayah.json'); 
 
+
+
+// var quransurahs = [];
+
 export default function HomeScreen() {
 
-  console.log(ayahData[0]);
+  const [data, setData] = useState([]);
 
-  const DATA = [
-    {
-      id: 'bd7acbea-46c2-aed5-3ad53abb28ba',
-      title: 'First Item',
-    },
-    {
-      id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-      title: 'Second Item',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Third Item',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Fourth Item',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Fifth Item',
-    },
 
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Sixth Item',
-    },
+  // console.log('Total Data length ==');
+  // console.log(ayahData.length);
 
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Seventh Item',
-    },
+  // const DATA = [
+  //   {
+  //     id: 'bd7acbea-46c2-aed5-3ad53abb28ba',
+  //     title: 'First Item',
+  //   },
+  //   {
+  //     id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
+  //     title: 'Second Item',
+  //   },
+  //   {
+  //     id: '58694a0f-3da1-471f-bd96-145571e29d72',
+  //     title: 'Third Item',
+  //   },
+  //   {
+  //     id: '58694a0f-3da1-471f-bd96-145571e29d72',
+  //     title: 'Fourth Item',
+  //   },
+  //   {
+  //     id: '58694a0f-3da1-471f-bd96-145571e29d72',
+  //     title: 'Fifth Item',
+  //   },
 
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: '8th Item',
-    }
+  //   {
+  //     id: '58694a0f-3da1-471f-bd96-145571e29d72',
+  //     title: 'Sixth Item',
+  //   },
 
-  ];
+  //   {
+  //     id: '58694a0f-3da1-471f-bd96-145571e29d72',
+  //     title: 'Seventh Item',
+  //   },
 
-  type ItemProps = {title: string};
+  //   {
+  //     id: '58694a0f-3da1-471f-bd96-145571e29d72',
+  //     title: '8th Item',
+  //   }
 
-  const Item = ({title}: ItemProps) => (
+  // ];
+
+  // type ItemProps = {items: object};
+
+  const Item = ({items}) => (
     <View style={styles.item}>
       <View style={{backgroundColor:'red', flex:0.90, flexDirection:'row'}}>
         <View style={{flex:0.50, backgroundColor:'grey'}}>
-        <Text style={{color:'white'}}>English</Text>
+        <Text style={{color:'white'}}>{items.name}</Text>
+        {/* <Text style={{color:'white'}}>{items.Translation}</Text> */}
 
         </View>
         <View style={{flex:0.50, backgroundColor:'white'}}>
-        <Text style={{color:'white'}}>Arabic</Text>
+        <Text style={{color:'black'}}>{items.englishName}</Text>
 
         </View>
       </View>
-      <View style={{backgroundColor:'blue', flex:0.10}}>
-        <Text>Parah Number</Text>
+      <View style={{backgroundColor:'white', flex:0.10}}>
+        {/* <Text>{items.ParahNumber}</Text> */}
+        <Text>{items.englishNameTranslation}</Text>
+
       </View>
     </View>
 );
 
-  // type ItemProps = {title: string};
 
-  // const Item = ({title}: ItemProps) => (
-  //   <View style={styles.item}>
-  //     <View style={styles.innerTop}>
-  //       <View style={styles.english}>
-  //       <Text>English Quran</Text>
-  //       </View>
-  //       <View style={styles.arabic}>
-  //       <Text>Arabic Quran</Text>
-  //       </View>
-  //     </View>
-  //     <View style={styles.innerBottom}>
-  //     <Text> Testing </Text>
-  //     </View>
-  //     {/* <Text style={styles.title}>{title}</Text> */}
-  //   </View>
-  // );
+  const getQuranFromApiAsync = async () => {
+    try {
+      const response = await fetch(
+        'https://api.alquran.cloud/v1/quran/en.asad',
+      );
+      const json = await response.json();
+      setData(json.data.surahs);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getQuranFromApiAsync();
+  },[]);
+
   return (
 
     <View style={styles.container}>
+      {console.log('We are in Return == ')}
       <Text> In the name of Allah </Text>
 
       <FlatList
-        data={DATA}
-        renderItem={({item}) => <Item title={item.title} />}
+        data={data}
+        renderItem={({item}) => <Item items={item} />}
         keyExtractor={item => item.id}
       />
 
