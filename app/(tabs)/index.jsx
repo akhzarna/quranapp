@@ -1,4 +1,11 @@
-import { Image, StyleSheet, Platform, View, Text, FlatList } from 'react-native';
+import { 
+  Image, 
+  StyleSheet, 
+  Platform, 
+  View, 
+  Text, 
+  FlatList,
+  ActivityIndicator } from 'react-native';
 
 import { useState } from 'react';
 
@@ -7,61 +14,16 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useEffect } from 'react';
-
 const ayahData = require('./ayah.json'); 
 
-
-
-// var quransurahs = [];
+import useFetchData from './useFetchData';
+import useGETAPI from './useGETApi';
 
 export default function HomeScreen() {
 
-  const [data, setData] = useState([]);
-
-
-  // console.log('Total Data length ==');
-  // console.log(ayahData.length);
-
-  // const DATA = [
-  //   {
-  //     id: 'bd7acbea-46c2-aed5-3ad53abb28ba',
-  //     title: 'First Item',
-  //   },
-  //   {
-  //     id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-  //     title: 'Second Item',
-  //   },
-  //   {
-  //     id: '58694a0f-3da1-471f-bd96-145571e29d72',
-  //     title: 'Third Item',
-  //   },
-  //   {
-  //     id: '58694a0f-3da1-471f-bd96-145571e29d72',
-  //     title: 'Fourth Item',
-  //   },
-  //   {
-  //     id: '58694a0f-3da1-471f-bd96-145571e29d72',
-  //     title: 'Fifth Item',
-  //   },
-
-  //   {
-  //     id: '58694a0f-3da1-471f-bd96-145571e29d72',
-  //     title: 'Sixth Item',
-  //   },
-
-  //   {
-  //     id: '58694a0f-3da1-471f-bd96-145571e29d72',
-  //     title: 'Seventh Item',
-  //   },
-
-  //   {
-  //     id: '58694a0f-3da1-471f-bd96-145571e29d72',
-  //     title: '8th Item',
-  //   }
-
-  // ];
-
-  // type ItemProps = {items: object};
+  const {data, loading} = useGETAPI('https://api.alquran.cloud/v1/quran/en.asad');
+  
+  // const {data, loading} = useFetchData('https://api.alquran.cloud/v1/quran/en.asad');
 
   const Item = ({items}) => (
     <View style={styles.item}>
@@ -84,34 +46,45 @@ export default function HomeScreen() {
     </View>
 );
 
-
-  const getQuranFromApiAsync = async () => {
-    try {
-      const response = await fetch(
-        'https://api.alquran.cloud/v1/quran/en.asad',
-      );
-      const json = await response.json();
-      setData(json.data.surahs);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const getQuranFromApiAsync = async () => {
+  //   try {
+  //     const response = await fetch(
+  //       'https://api.alquran.cloud/v1/quran/en.asad',
+  //     );
+  //     const json = await response.json();
+  //     setData(json.data.surahs);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   useEffect(() => {
-    getQuranFromApiAsync();
+    // getQuranFromApiAsync();
   },[]);
 
   return (
 
     <View style={styles.container}>
       {console.log('We are in Return == ')}
-      <Text> In the name of Allah </Text>
-
-      <FlatList
-        data={data}
-        renderItem={({item}) => <Item items={item} />}
-        keyExtractor={item => item.id}
-      />
+      {
+        loading ? (
+          <ActivityIndicator 
+          size="large" 
+          color="white" 
+          style={
+            { 
+              flex: 1, 
+              justifyContent: "center", 
+              alignItems: "center" }}
+          />
+        ):(
+        <FlatList
+          data={data}
+          renderItem={({item}) => <Item items={item} />}
+          keyExtractor={item => item.id}
+        />
+        )
+      }
 
     </View>
 
