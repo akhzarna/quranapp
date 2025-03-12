@@ -15,12 +15,14 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useEffect } from 'react';
 const ayahData = require('./ayah.json'); 
-
 import useFetchData from './useFetchData';
 import useGETAPI from './useGETApi';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 export default function HomeScreen() {
 
+  
   const {data, loading} = useGETAPI('https://api.alquran.cloud/v1/quran/en.asad');
   
   // const {data, loading} = useFetchData('https://api.alquran.cloud/v1/quran/en.asad');
@@ -60,7 +62,18 @@ export default function HomeScreen() {
 
   useEffect(() => {
     // getQuranFromApiAsync();
-  },[]);
+
+    const qurandata = {id:0, surah:'Baqarah', surahid:12};
+   
+    AsyncStorage.setItem('mydata', JSON.stringify(qurandata));
+
+    AsyncStorage.getItem('mydata').then((value) => {  
+      console.log('Value == ', value.surah);
+      const myvalue = JSON.parse(value);
+      console.log('Value == ', myvalue.surah);
+    });
+
+  }, []);
 
   return (
 
